@@ -29,9 +29,11 @@ app.all('/proxy/:service_name*', (req,res) => {
   const original_path = req.originalUrl
 
   // manage_path
-  let split_string = original_path.split('/')
-  split_string.splice(1,2)
-  const new_path =  split_string.join('/')
+  let path_split = original_path.split('/')
+
+  // Remove /proxy/:service_name
+  path_split.splice(1,2)
+  const new_path =  path_split.join('/')
 
   // Assemble the target_url
   const target_url = `${target_hostname}${new_path}`
