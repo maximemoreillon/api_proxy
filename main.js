@@ -19,10 +19,19 @@ let handle_proxy = (req, res, options) => {
 }
 
 app.get('/proxy', (req, res) => {
+
+  let services = []
+  for (var variable in process.env) {
+    if(variable.includes('PROXY_')) {
+      services.push({variable: variable, url: process.env[variable]})
+    }
+  }
+
   res.send({
     author: 'Maxime MOREILLON',
     application_name: pjson.name,
-    version: pjson.version
+    version: pjson.version,
+    services: services,
   })
 })
 
