@@ -1,6 +1,7 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const httpProxy = require('http-proxy')
+const pjson = require('./package.json')
 
 dotenv.config()
 
@@ -17,8 +18,17 @@ let handle_proxy = (req, res, options) => {
   })
 }
 
+app.get('/proxy', (req, res) => {
+  res.send({
+    author: 'Maxime MOREILLON',
+    application_name: pjson.name,
+    version: pjson.version
+  })
+})
+
 app.all('/proxy/:service_name*', (req,res) => {
 
+  const service_name = req.params.service_name
   const service_name_formatted = req.params.service_name.toUpperCase().replace('-','_')
   const target_hostname = process.env[`PROXY_${service_name_formatted}`]
 
