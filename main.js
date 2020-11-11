@@ -42,7 +42,7 @@ app.all('/proxy/:service_name*', (req,res) => {
   const target_hostname = process.env[`PROXY_${service_name_formatted}`]
 
   if(!target_hostname) {
-    res.status(404).send(`The Proxy is not configured to handle the service called '${service_name}'`)
+    return res.status(404).send(`The Proxy is not configured to handle the service called '${service_name}'`)
   }
 
   const original_path = req.originalUrl
