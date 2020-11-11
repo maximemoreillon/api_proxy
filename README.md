@@ -2,6 +2,8 @@
 
 A proxy server for microservices.
 
+https://hub.docker.com/repository/docker/moreillon/api-proxy
+
 ## API
 
 | Route | Method | Description |
