@@ -22,7 +22,7 @@ app.get('/proxy', (req, res) => {
 
   let services = []
   for (var variable in process.env) {
-    if(variable.includes('PROXY_')) {
+    if(variable.startsWith('PROXY_')) {
       services.push({variable: variable, url: process.env[variable]})
     }
   }
@@ -38,7 +38,7 @@ app.get('/proxy', (req, res) => {
 app.all('/proxy/:service_name*', (req,res) => {
 
   const service_name = req.params.service_name
-  const service_name_formatted = req.params.service_name.toUpperCase().replace('-','_')
+  const service_name_formatted = service_name.toUpperCase().replace('-','_')
   const target_hostname = process.env[`PROXY_${service_name_formatted}`]
 
   if(!target_hostname) {
