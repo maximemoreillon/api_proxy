@@ -65,7 +65,7 @@ app.all('/proxy/:service_name*', (req,res) => {
   handle_proxy(req, res, proxy_options)
 })
 
-app.all('/socket.io', (req, res) => {
+app.all('/socket.io*', (req, res) => {
   // The route used for Websockets
   const target = process.env.PROXY_WS
   handle_proxy(req, res, { target })
