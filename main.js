@@ -9,10 +9,12 @@ const PORT = process.env.PORT || 80
 
 const app = express()
 
-const proxy = httpProxy.createProxyServer()
+const proxy = httpProxy.createProxy()
 
 let handle_proxy = (req, res, options) => {
+  // A wrapper for the proxy function
   proxy.web(req, res, options, (error) => {
+    // error handling
     res.status(500).send(`The proxy failed to retrieve resource at ${process.env.PROXY_ROOT}`)
     console.log(error)
   })
@@ -41,6 +43,8 @@ app.all('/proxy/:service_name*', (req,res) => {
   const service_name_formatted = service_name.toUpperCase().replace('-','_')
   const target_hostname = process.env[`PROXY_${service_name_formatted}`]
 
+
+
   if(!target_hostname) {
     return res.status(404).send(`The Proxy is not configured to handle the service called '${service_name}'`)
   }
@@ -55,18 +59,35 @@ app.all('/proxy/:service_name*', (req,res) => {
   const new_path =  path_split.join('/')
 
   // Assemble the target_url
-  const target_url = `${target_hostname}${new_path}`
+  const target = `${target_hostname}${new_path}`
 
-  const proxy_options = { target: target_url, ignorePath: true}
+  // IgnorePath: true because we reconstruct the path ourselves here
+  const proxy_options = { target, ignorePath: true}
 
   handle_proxy(req, res, proxy_options)
+})
+
+app.all('/socket.io', (req, res) => {
+  // The route used for Websockets
+  const target = process.env.PROXY_WS
+  handle_proxy(req, res, { target })
 })
 
 app.get('/*', (req, res) => {
   // The route used for the front end
-  const proxy_options = { target: process.env.PROXY_ROOT}
+
+  // TODO: Try to merge with previous
+
+  const target = process.env.PROXY_ROOT
+
+  // IgnorePath: false because we use the path as provided
+  const proxy_options = { target, ignorePath: false}
+
   handle_proxy(req, res, proxy_options)
 })
+
+
+
 
 app.listen(PORT, () => {
   console.log(`API proxy listening on port ${PORT}`)
