@@ -40,7 +40,7 @@ app.get('/proxy', (req, res) => {
 app.all('/proxy/:service_name*', (req,res) => {
 
   const service_name = req.params.service_name
-  const service_name_formatted = service_name.toUpperCase().replaceAll('-','_')
+  const service_name_formatted = service_name.toUpperCase().replace('/-/g','_')
   const target_hostname = process.env[`PROXY_${service_name_formatted}`]
 
   if(!target_hostname) {
