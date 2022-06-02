@@ -1,6 +1,6 @@
 const express = require('express')
 const dotenv = require('dotenv')
-const httpProxy = require('http-proxy')
+const { createProxy } = require('http-proxy')
 const {
   name: application_name, 
   version, 
@@ -13,7 +13,7 @@ const {PORT = 80} = process.env
 
 const app = express()
 
-const proxy = httpProxy.createProxy()
+const proxy = createProxy()
 
 const handle_proxy = (req, res, options) => {
   // A wrapper for the proxy function
@@ -35,7 +35,7 @@ app.get('/proxy', (req, res) => {
   }
 
   res.send({
-    author: 'Maxime MOREILLON',
+    author,
     application_name,
     version,
     services,
