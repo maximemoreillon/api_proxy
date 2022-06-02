@@ -1,19 +1,35 @@
 stages:
-  - containerization
+  - build
 
 variables:
   APPLICATION_NAME: api-proxy
-  DOCKER_IMAGE: ${DOCKER_HUB_USERNAME}/${APPLICATION_NAME}
+  CONTAINER_TAG: ${CI_COMMIT_SHORT_SHA}
+  CONTAINER_IMAGE: ${DOCKER_HUB_USERNAME}/${APPLICATION_NAME}
+  CONTAINER_IMAGE_TAGGED: ${CONTAINER_IMAGE}:${CONTAINER_TAG}
 
-containerization:
-  stage: containerization
+image: moreillon/ci-dind
+services:
+  - name: docker:19.03.12-dind
+
+
+build-x86:
+  stage: build
   tags:
-    - moreillon
-  script:
+    - dind
+  only:
+    - master
+  before_script:
     # Docker hub login
     - echo "${DOCKER_HUB_PASSWORD}" | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin;
-    # Building and pushing container image
-    - docker build -t ${DOCKER_IMAGE} .
-    - docker push ${DOCKER_IMAGE}
+  script:
+    # Building, tagging
+    - docker build -t ${CONTAINER_IMAGE} .
+    - docker tag ${CONTAINER_IMAGE} ${CONTAINER_IMAGE_TAGGED}
+
+    # Pushing
+    - docker push ${CONTAINER_IMAGE}
+    - docker push ${CONTAINER_IMAGE_TAGGED}
+
     # Cleanup
-    - docker image rm ${DOCKER_IMAGE}
+    - docker image rm ${CONTAINER_IMAGE}
+    - docker image rm ${CONTAINER_IMAGE_TAGGED}

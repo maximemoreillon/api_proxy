@@ -11,19 +11,20 @@ const app = express()
 
 const proxy = httpProxy.createProxy()
 
-let handle_proxy = (req, res, options) => {
+const handle_proxy = (req, res, options) => {
   // A wrapper for the proxy function
   proxy.web(req, res, options, (error) => {
     // error handling
-    res.status(500).send(`The proxy failed to retrieve resource at ${process.env.PROXY_ROOT}`)
-    console.log(error)
+    // This error message is shit
+    res.status(500).send(`The proxy failed to retrieve resource from ${options.target}`)
+    console.log(`The proxy failed to retrieve resource from ${options.target}: ${error}`)
   })
 }
 
 app.get('/proxy', (req, res) => {
 
-  let services = []
-  for (var variable in process.env) {
+  const services = []
+  for (let variable in process.env) {
     if(variable.startsWith('PROXY_')) {
       services.push({variable: variable, url: process.env[variable]})
     }
@@ -39,18 +40,20 @@ app.get('/proxy', (req, res) => {
 
 app.all('/proxy/:service_name*', (req,res) => {
 
-  const service_name = req.params.service_name
+  const {service_name} = req.params
   const service_name_formatted = service_name.toUpperCase().replace(/-/g,'_')
   const target_hostname = process.env[`PROXY_${service_name_formatted}`]
 
   if(!target_hostname) {
-    return res.status(404).send(`The Proxy is not configured to handle the service called '${service_name}'`)
+    const message = `The Proxy is not configured to handle the service called '${service_name}'`
+    console.log(message)
+    return res.status(404).send(message)
   }
 
   const original_path = req.originalUrl
 
   // manage_path
-  let path_split = original_path.split('/')
+  const path_split = original_path.split('/')
 
   // Remove /proxy/:service_name
   path_split.splice(1,2)
@@ -62,6 +65,7 @@ app.all('/proxy/:service_name*', (req,res) => {
   // IgnorePath: true because we reconstruct the path ourselves here
   const proxy_options = { target, ignorePath: true}
 
+  // Use the proxy with the given configuration  
   handle_proxy(req, res, proxy_options)
 })
 
