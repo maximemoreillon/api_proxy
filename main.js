@@ -1,11 +1,15 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const httpProxy = require('http-proxy')
-const pjson = require('./package.json')
+const {
+  name: application_name, 
+  version, 
+  author
+} = require('./package.json')
 
 dotenv.config()
 
-const PORT = process.env.PORT || 80
+const {PORT = 80} = process.env
 
 const app = express()
 
@@ -26,15 +30,15 @@ app.get('/proxy', (req, res) => {
   const services = []
   for (let variable in process.env) {
     if(variable.startsWith('PROXY_')) {
-      services.push({variable: variable, url: process.env[variable]})
+      services.push({variable, url: process.env[variable]})
     }
   }
 
   res.send({
     author: 'Maxime MOREILLON',
-    application_name: pjson.name,
-    version: pjson.version,
-    services: services,
+    application_name,
+    version,
+    services,
   })
 })
 
