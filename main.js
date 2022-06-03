@@ -1,5 +1,6 @@
 const express = require('express')
 const dotenv = require('dotenv')
+const apiMetrics = require('prometheus-api-metrics')
 const { createProxy } = require('http-proxy')
 const {
   name: application_name, 
@@ -9,9 +10,10 @@ const {
 
 dotenv.config()
 
-const {PORT = 80} = process.env
+const { PORT = 80 } = process.env
 
 const app = express()
+app.use(apiMetrics())
 
 const proxy = createProxy()
 
@@ -91,3 +93,5 @@ app.get('/*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`API proxy listening on port ${PORT}`)
 })
+
+exports.app = app
