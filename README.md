@@ -1,8 +1,11 @@
 # API proxy
 
-A proxy server for microservices.
+[![dockeri.co](https://dockeri.co/image/moreillon/ci-dind)](https://hub.docker.com/r/moreillon/ci-dind)
 
-https://hub.docker.com/repository/docker/moreillon/api-proxy
+The front-end of web applications are designed to run in the client's web browser. As such, front-ends might not get access to some resources on the back-end. For instance, for an application built in a microservice architecture where services are orchestrated in Kubernetes, the front-end might not have access to some of the services unless those are configured accordingly.
+
+This application can be used to proxy requests from the front-end internally so as to fetch the required resources.
+
 
 ## API
 
@@ -18,3 +21,4 @@ https://hub.docker.com/repository/docker/moreillon/api-proxy
 | --- | --- |
 | PROXY_ROOT | Sets the URL of the service to which requests to / are redirected |
 | PROXY_SERVICE_NAME | Sets the URL of the service to which requests to /proxy/service-name are redirected |
+
