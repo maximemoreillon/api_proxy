@@ -16,6 +16,22 @@ describe('/proxy', () => {
         })
     })
 
+    describe("GET /proxy/test", () => {
+        it("Should proxy the test service", async () => {
+            const { status } = await request(app).get('/proxy/test')
+
+            expect(status).to.equal(200)
+        })
+    })
+
+    describe("GET /proxy/banana", () => {
+        it("Should not allow proxying an unregistered service", async () => {
+            const { status } = await request(app).get('/proxy/banana')
+
+            expect(status).to.not.equal(200)
+        })
+    })
+
 
 
 

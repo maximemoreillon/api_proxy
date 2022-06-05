@@ -10,6 +10,9 @@ variables:
   CONTAINER_IMAGE_AARCH64: ${CONTAINER_IMAGE}:aarch64
   CONTAINER_IMAGE_AARCH64_TAGGED: ${CONTAINER_IMAGE}:aarch64-${CONTAINER_TAG}
 
+  # Example URL for TDD in CICD
+  PROXY_TEST: http://localhost
+
 image: moreillon/ci-dind
 services:
   - name: docker:19.03.12-dind
