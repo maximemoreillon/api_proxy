@@ -79,14 +79,16 @@ app.all('/proxy/:service_name*', (req,res) => {
   handle_proxy(req, res, proxy_options)
 })
 
-app.all('/socket.io*', (req, res) => {
-  // The route used for Websockets
-  const target = process.env.PROXY_WS
-  handle_proxy(req, res, { target })
-})
+if (PROXY_WS) {
+  app.all('/socket.io*', (req, res) => {
+    // The route used for Websockets
+    const target = process.env.PROXY_WS
+    handle_proxy(req, res, { target })
+  })
+}
+
 
 // Front-end
-
 if (PROXY_ROOT) {
   // If PROXY_ROOT is set, then front-end at this URL is served
   app.get('/*', (req, res) => {

@@ -1,4 +1,5 @@
 stages:
+  - test
   - build
 
 variables:
@@ -13,6 +14,17 @@ image: moreillon/ci-dind
 services:
   - name: docker:19.03.12-dind
 
+
+test:
+  stage: test
+  tags:
+    - dind
+  image: node:14
+  only:
+    - master
+  script:
+    - npm install
+    - npm run nyc
 
 build-x86:
   stage: build
