@@ -1,6 +1,6 @@
 # API proxy
 
-[![dockeri.co](https://dockeri.co/image/moreillon/ci-dind)](https://hub.docker.com/r/moreillon/ci-dind)
+[![dockeri.co](https://dockeri.co/image/moreillon/api-proxy)](https://hub.docker.com/r/moreillon/api-proxy)
 
 The front-end of web applications are designed to run in the client's web browser. As such, front-ends might not get access to some resources on the back-end. For instance, for an application built in a microservice architecture where services are orchestrated in Kubernetes, the front-end might not have access to some of the services unless those are configured accordingly.
 
