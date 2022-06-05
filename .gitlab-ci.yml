@@ -24,7 +24,7 @@ test:
     - master
   script:
     - npm install
-    - npm run nyc
+    - npm run coverage
 
 build-x86:
   stage: build
