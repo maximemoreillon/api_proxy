@@ -6,6 +6,8 @@ variables:
   CONTAINER_TAG: ${CI_COMMIT_SHORT_SHA}
   CONTAINER_IMAGE: ${DOCKER_HUB_USERNAME}/${APPLICATION_NAME}
   CONTAINER_IMAGE_TAGGED: ${CONTAINER_IMAGE}:${CONTAINER_TAG}
+  CONTAINER_IMAGE_AARCH64: ${CONTAINER_IMAGE}:aarch64
+  CONTAINER_IMAGE_AARCH64_TAGGED: ${CONTAINER_IMAGE}:aarch64-${CONTAINER_TAG}
 
 image: moreillon/ci-dind
 services:
@@ -33,3 +35,25 @@ build-x86:
     # Cleanup
     - docker image rm ${CONTAINER_IMAGE}
     - docker image rm ${CONTAINER_IMAGE_TAGGED}
+
+build-aarch64:
+  stage: build
+  tags:
+    - aarch64
+  only:
+    - master
+  before_script:
+    # Docker hub login
+    - echo "${DOCKER_HUB_PASSWORD}" | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin;
+  script:
+    # Building, tagging
+    - docker build -t ${CONTAINER_IMAGE_AARCH64} .
+    - docker tag ${CONTAINER_IMAGE_AARCH64} ${CONTAINER_IMAGE_AARCH64_TAGGED}
+
+    # Pushing
+    - docker push ${CONTAINER_IMAGE_AARCH64}
+    - docker push ${CONTAINER_IMAGE_AARCH64_TAGGED}
+
+    # Cleanup
+    - docker image rm ${CONTAINER_IMAGE_AARCH64}
+    - docker image rm ${CONTAINER_IMAGE_AARCH64_TAGGED}
