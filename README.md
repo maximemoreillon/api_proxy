@@ -20,5 +20,6 @@ This application can be used to proxy requests from the front-end internally so 
 | Variable |  Description |
 | --- | --- |
 | PROXY_ROOT | Sets the URL of the service to which requests to / are redirected |
-| PROXY_SERVICE_NAME | Sets the URL of the service to which requests to /proxy/service-name are redirected |
+| PROXY_SERVICE_NAME | Sets the URL of the service to which requests to /proxy/service-name are redirected. Replace SERVICE_NAME by the name of your service |
 
+Note: If PROXY_ROOT is not set, the service will serve static files from the dist directory instead.
