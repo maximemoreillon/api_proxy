@@ -14,6 +14,7 @@ dotenv.config()
 const { 
   PORT = 80,
   PROXY_ROOT,
+  PROXY_WS,
 } = process.env
 
 const app = express()
@@ -82,8 +83,7 @@ app.all('/proxy/:service_name*', (req,res) => {
 if (PROXY_WS) {
   app.all('/socket.io*', (req, res) => {
     // The route used for Websockets
-    const target = process.env.PROXY_WS
-    handle_proxy(req, res, { target })
+    handle_proxy(req, res, { target: PROXY_WS })
   })
 }
 
