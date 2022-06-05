@@ -1,6 +1,7 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const apiMetrics = require('prometheus-api-metrics')
+const history = require('connect-history-api-fallback')
 const { createProxy } = require('http-proxy')
 const {
   name: application_name, 
@@ -10,7 +11,10 @@ const {
 
 dotenv.config()
 
-const { PORT = 80 } = process.env
+const { 
+  PORT = 80,
+  PROXY_ROOT,
+} = process.env
 
 const app = express()
 app.use(apiMetrics())
@@ -81,11 +85,23 @@ app.all('/socket.io*', (req, res) => {
   handle_proxy(req, res, { target })
 })
 
-app.get('/*', (req, res) => {
-  // The route used for the front end
-  const target = process.env.PROXY_ROOT
-  handle_proxy(req, res, { target })
-})
+// Front-end
+
+if (PROXY_ROOT) {
+  // If PROXY_ROOT is set, then front-end at this URL is served
+  app.get('/*', (req, res) => {
+    // The route used for the front end
+    handle_proxy(req, res, { target: PROXY_ROOT })
+  })
+}
+else {
+  // Serve the vue.js app
+  app.use(express.static('dist'))
+
+  // Always fall back to index.html
+  app.use(history())
+}
+
 
 
 
