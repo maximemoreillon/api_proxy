@@ -23,8 +23,9 @@ app.use(apiMetrics())
 
 const proxy = createProxy()
 
-const handle_proxy = (req, res, options) => {
+const handle_proxy = (req, res, opts) => {
   // A wrapper for the proxy function
+  const options = { ...opts, secure: false }
   proxy.web(req, res, options, (error) => {
     res.status(500).send(error)
     console.error(error)
