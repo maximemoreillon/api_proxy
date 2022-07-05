@@ -99,11 +99,11 @@ if (PROXY_ROOT) {
   })
 }
 else {
+  // Always fall back to index.html
+  app.use(history())
   // Serve the vue.js app
   app.use(express.static('dist'))
 
-  // Always fall back to index.html
-  app.use(history())
 }
 
 
