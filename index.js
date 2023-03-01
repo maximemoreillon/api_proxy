@@ -7,7 +7,7 @@ const { name: application_name, version, author } = require("./package.json")
 
 dotenv.config()
 
-const { PORT = 80, PROXY_ROOT, PROXY_WS } = process.env
+const { PORT = 80, PROXY_ROOT, PROXY_WS, PATH_PREFIX } = process.env
 
 const app = express()
 app.use(apiMetrics())
@@ -26,11 +26,11 @@ const handle_proxy = (req, res, opts) => {
 const services = Object.keys(process.env)
   .filter((v) => v.startsWith("PROXY_"))
   .map((v) => ({
-    route: v.split("PROXY_")[1].toLocaleLowerCase().replace(/_/g, "-"),
+    route: "/" + v.split("PROXY_")[1].toLocaleLowerCase().replace(/_/g, "-"),
     host: process.env[v],
   }))
 
-const handler = (host) => async (req, res, next) => {
+const route_handler = (host) => async (req, res, next) => {
   try {
     // Remove /proxy/:service_name from path
     const path_split = req.originalUrl.split("/")
@@ -56,13 +56,16 @@ app.get("/proxy", (req, res) => {
     application_name,
     version,
     services,
+    path_prefix: PATH_PREFIX,
   })
 })
 
 services.forEach(({ route, host }) => {
-  app.all(`/proxy/${route}*`, handler(host))
+  const path_prefix = PATH_PREFIX === undefined ? "/proxy" : PATH_PREFIX
+  app.all(`${path_prefix}${route}*`, route_handler(host))
 })
 
+// TODO: it is not a good idea to use the WS_prefix as it creates a route above
 if (PROXY_WS) {
   app.all("/socket.io*", (req, res) => {
     // The route used for Websockets
