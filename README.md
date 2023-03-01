@@ -2,10 +2,12 @@
 
 [![pipeline status](https://gitlab.com/moreillon_ci/api_proxy/badges/master/pipeline.svg)](https://gitlab.com/moreillon_ci/api_proxy)
 [![coverage report](https://gitlab.com/moreillon_ci/api_proxy/badges/master/coverage.svg)](https://gitlab.com/moreillon_ci/api_proxy)
+![Docker Pulls](https://img.shields.io/docker/pulls/moreillon/api-proxy)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/moreillon)](https://artifacthub.io/packages/search?repo=moreillon)
 
-The front-end of web applications are designed to run in the client's web browser. As such, front-ends might not get access to some resources on the back-end. For instance, for an application built in a microservice architecture where services are orchestrated in Kubernetes, the front-end might not have access to some of the services unless those are configured accordingly.
+This is a simple API proxy / gateway for applications designed in a microservice architecture.
 
-This application can be used to proxy requests from the front-end internally so as to fetch the required resources.
+It is mainly used for GUIs designed as SPA to reach their back-end without prior knowledge of the IP or FQDN of the latter.
 
 ## API
 
