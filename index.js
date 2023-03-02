@@ -7,7 +7,7 @@ const { name: application_name, version, author } = require("./package.json")
 
 dotenv.config()
 
-const { PORT = 80, PROXY_ROOT, PROXY_WS, PATH_PREFIX } = process.env
+const { PORT = 80, PROXY_ROOT, PROXY_WS, PATH_PREFIX = "/proxy" } = process.env
 
 const app = express()
 app.use(apiMetrics())
@@ -38,14 +38,12 @@ const services = Object.keys(process.env)
     }
   })
 
-const path_prefix = PATH_PREFIX === undefined ? "/proxy" : PATH_PREFIX
-
 const route_handler =
   ({ host, route }) =>
   async (req, res, next) => {
     try {
       // Rewrite URL
-      const basePath = `${path_prefix}${route}`
+      const basePath = `${PATH_PREFIX}${route}`
       const new_path = req.originalUrl.replace(basePath, "")
       const target = `${host}${new_path}`
 
@@ -59,19 +57,20 @@ const route_handler =
     }
   }
 
+// TODO: consider renaming
 app.get("/proxy", (req, res) => {
   res.send({
     author,
     application_name,
     version,
-    path_prefix,
+    path_prefix: PATH_PREFIX,
     root: PROXY_ROOT,
     services,
   })
 })
 
 services.forEach(({ route, host }) => {
-  app.all(`${path_prefix}${route}*`, route_handler({ host, route }))
+  app.all(`${PATH_PREFIX}${route}*`, route_handler({ host, route }))
 })
 
 // TODO: it is not a good idea to use the WS_prefix as it creates a route above
