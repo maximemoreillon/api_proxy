@@ -62,7 +62,7 @@ app.get("/proxy", (req, res) => {
 
 services.forEach(({ route, host }) => {
   const path_prefix = PATH_PREFIX === undefined ? "/proxy" : PATH_PREFIX
-  app.all(`${path_prefix}${route}*`, route_handler(host))
+  app.all(`${path_prefix}${route}/*`, route_handler(host))
 })
 
 // TODO: it is not a good idea to use the WS_prefix as it creates a route above
