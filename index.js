@@ -24,45 +24,54 @@ const handle_proxy = (req, res, opts) => {
 }
 
 const services = Object.keys(process.env)
-  .filter((v) => v.startsWith("PROXY_"))
-  .map((v) => ({
-    route: "/" + v.split("PROXY_")[1].toLocaleLowerCase().replace(/_/g, "-"),
-    host: process.env[v],
-  }))
+  .filter((v) => v.startsWith("PROXY_") && v !== "PROXY_ROOT")
+  .map((variable) => {
+    const service = variable
+      .split("PROXY_")[1]
+      .toLocaleLowerCase()
+      .replace(/_/g, "-")
+    const route = `/${service}`
+    return {
+      route,
+      host: process.env[variable],
+      variable,
+    }
+  })
 
-const route_handler = (host) => async (req, res, next) => {
-  try {
-    // Remove /proxy/:service_name from path
-    const path_split = req.originalUrl.split("/")
-    path_split.splice(1, 2)
-    const new_path = path_split.join("/")
+const path_prefix = PATH_PREFIX === undefined ? "/proxy" : PATH_PREFIX
 
-    // Assemble the target_url
-    const target = `${host}${new_path}`
+const route_handler =
+  ({ host, route }) =>
+  async (req, res, next) => {
+    try {
+      // Rewrite URL
+      const basePath = `${path_prefix}${route}`
+      const new_path = req.originalUrl.replace(basePath, "")
+      const target = `${host}${new_path}`
 
-    // IgnorePath: true because we reconstruct the path ourselves here
-    const proxy_options = { target, ignorePath: true }
+      // IgnorePath: true because we reconstruct the path ourselves here
+      const proxy_options = { target, ignorePath: true }
 
-    // Use the proxy with the given configuration
-    handle_proxy(req, res, proxy_options)
-  } catch (error) {
-    next(error)
+      // Use the proxy with the given configuration
+      handle_proxy(req, res, proxy_options)
+    } catch (error) {
+      next(error)
+    }
   }
-}
 
 app.get("/proxy", (req, res) => {
   res.send({
     author,
     application_name,
     version,
+    path_prefix,
+    root: PROXY_ROOT,
     services,
-    path_prefix: PATH_PREFIX,
   })
 })
 
 services.forEach(({ route, host }) => {
-  const path_prefix = PATH_PREFIX === undefined ? "/proxy" : PATH_PREFIX
-  app.all(`${path_prefix}${route}/*`, route_handler(host))
+  app.all(`${path_prefix}${route}*`, route_handler({ host, route }))
 })
 
 // TODO: it is not a good idea to use the WS_prefix as it creates a route above
