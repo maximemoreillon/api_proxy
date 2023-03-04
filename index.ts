@@ -5,6 +5,8 @@ import history from "connect-history-api-fallback"
 import { createProxy } from "http-proxy"
 import { name as application_name, version, author } from "./package.json"
 import { Request, Response, NextFunction } from "express"
+import YAML from "yaml"
+import { readFileSync } from "fs"
 
 dotenv.config()
 
@@ -23,7 +25,6 @@ interface ProxyOptions {
 interface Service {
   route: string
   host: string | undefined
-  variable?: string
 }
 
 const handle_proxy = (req: Request, res: Response, opts: ProxyOptions) => {
@@ -37,7 +38,9 @@ const handle_proxy = (req: Request, res: Response, opts: ProxyOptions) => {
 
 const getSlashCount = (input: string) => (input.match(/\//g) || []).length
 
-const services: Service[] = Object.keys(process.env)
+const configFile = readFileSync("./config/config.yml", "utf8")
+const servicesFromConfigFile: Service[] = YAML.parse(configFile).services
+const servicesFromEnv: Service[] = Object.keys(process.env)
   .filter((v) => v.startsWith("PROXY_") && !["PROXY_WS"].includes(v))
   .map((variable) => {
     const serviceName = variable
@@ -50,9 +53,10 @@ const services: Service[] = Object.keys(process.env)
     return {
       route,
       host: process.env[variable],
-      variable,
     }
   })
+
+const services: Service[] = [...servicesFromConfigFile, ...servicesFromEnv]
   // Sorting by character count and then number of "/" so as to order by specificity
   .sort((a, b) => b.route.length - a.route.length)
   .sort((a, b) => getSlashCount(b.route) - getSlashCount(a.route))

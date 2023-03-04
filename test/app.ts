@@ -1,7 +1,6 @@
 process.env.PATH_PREFIX = ""
 process.env.PROXY_TEST_VALID = "http://localhost"
 process.env.PROXY_TEST_INVALID = "http://localhost:4000"
-process.env.PROXY_TEST_HTTPS = "https://api.users.maximemoreillon.com/"
 
 import request from "supertest"
 import { expect } from "chai"

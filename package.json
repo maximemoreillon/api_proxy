@@ -17,7 +17,8 @@
     "http-errors": "^2.0.0",
     "http-proxy": "^1.18.1",
     "prom-client": "^14.0.1",
-    "prometheus-api-metrics": "^3.2.1"
+    "prometheus-api-metrics": "^3.2.1",
+    "yaml": "^2.2.1"
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",
