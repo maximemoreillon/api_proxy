@@ -26,7 +26,7 @@ const handle_proxy = (req, res, opts) => {
 const getSlashCount = (input) => (input.match(/\//g) || []).length
 
 const services = Object.keys(process.env)
-  .filter((v) => v.startsWith("PROXY_"))
+  .filter((v) => v.startsWith("PROXY_") && !["PROXY_WS"].includes(v))
   .map((variable) => {
     const serviceName = variable
       .split("PROXY_")[1]
