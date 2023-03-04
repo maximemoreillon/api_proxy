@@ -21,7 +21,7 @@ services:
 test:
   stage: test
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-  image: node:14
+  image: node:16
   tags:
     - dind
   only:

@@ -89,10 +89,10 @@ if (PROXY_WS) {
 }
 
 if (!PROXY_ROOT) {
+  // Serving app from the dist directory
   console.log("PROXY_ROOT not configured, serving GUI from the /dist directory")
   // Always fall back to index.html
   app.use(history())
-  // Serve the vue.js app
   app.use(express.static("dist"))
 }
 
