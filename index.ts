@@ -1,31 +1,43 @@
-const express = require("express")
-const dotenv = require("dotenv")
-const apiMetrics = require("prometheus-api-metrics")
-const history = require("connect-history-api-fallback")
-const { createProxy } = require("http-proxy")
-const { name: application_name, version, author } = require("./package.json")
+import express from "express"
+import dotenv from "dotenv"
+import apiMetrics from "prometheus-api-metrics"
+import history from "connect-history-api-fallback"
+import { createProxy } from "http-proxy"
+import { name as application_name, version, author } from "./package.json"
+import { Request, Response, NextFunction } from "express"
 
 dotenv.config()
 
 const { PORT = 80, PROXY_ROOT, PROXY_WS, PATH_PREFIX = "/proxy" } = process.env
 
-const app = express()
+export const app = express()
 app.use(apiMetrics())
 
 const proxy = createProxy()
 
-const handle_proxy = (req, res, opts) => {
+interface ProxyOptions {
+  target: string
+  ignorePath?: boolean
+}
+
+interface Service {
+  route: string
+  host: string | undefined
+  variable?: string
+}
+
+const handle_proxy = (req: Request, res: Response, opts: ProxyOptions) => {
   // A wrapper for the proxy function
   const options = { ...opts, secure: false }
-  proxy.web(req, res, options, (error) => {
+  proxy.web(req, res, options, (error: Error) => {
     res.status(500).send(error)
     console.error(error)
   })
 }
 
-const getSlashCount = (input) => (input.match(/\//g) || []).length
+const getSlashCount = (input: string) => (input.match(/\//g) || []).length
 
-const services = Object.keys(process.env)
+const services: Service[] = Object.keys(process.env)
   .filter((v) => v.startsWith("PROXY_") && !["PROXY_WS"].includes(v))
   .map((variable) => {
     const serviceName = variable
@@ -46,12 +58,14 @@ const services = Object.keys(process.env)
   .sort((a, b) => getSlashCount(b.route) - getSlashCount(a.route))
 
 const route_handler =
-  ({ host, route }) =>
-  async (req, res, next) => {
+  ({ host, route }: Service) =>
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Rewrite URL, i.e. remove /prefix/service/
 
-      const basePath = `${BASE_PATH}${route}`
+      if (!host) throw `Host does not exist`
+
+      const basePath = `${PATH_PREFIX}${route}`
       const new_path = req.originalUrl.replace(basePath, "")
       const new_url = new URL(host)
       new_url.pathname = new_path
@@ -97,7 +111,8 @@ if (!PROXY_ROOT) {
 }
 
 // Express error handling
-app.use((err, req, res, next) => {
+// TODO: find type of error
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err)
   const { statusCode = 500, message } = err
   res.status(statusCode).send(message)
@@ -106,5 +121,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`API proxy listening on port ${PORT}`)
 })
-
-exports.app = app
