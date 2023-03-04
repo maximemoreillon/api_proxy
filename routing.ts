@@ -76,9 +76,12 @@ services.forEach(({ route, host }) => {
   router.all(`${route}*`, route_handler({ host, route }))
 })
 
-if (!PROXY_ROOT) {
+const root_configured = services.some((s) => s.route === `/`)
+if (!root_configured) {
   // Serving app from the dist directory
-  console.log("PROXY_ROOT not configured, serving GUI from the /dist directory")
+  console.log(
+    "Root service not configured, serving GUI from the /dist directory"
+  )
   // Always fall back to index.html
   router.use(history())
   router.use(express.static("dist"))

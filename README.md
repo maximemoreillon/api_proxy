@@ -5,9 +5,9 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/moreillon/api-proxy)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/moreillon)](https://artifacthub.io/packages/search?repo=moreillon)
 
-This is an API proxy / gateway for applications designed in a microservice architecture.
-It is mainly used for GUIs designed as SPA to reach their back-end without prior knowledge of the IP or FQDN of the latter.
-Configuration is easy using simple environment variables.
+A simple API proxy / gateway for applications designed in a microservice architecture.
+It is mainly used so that GUIs designed as SPA can reach their back-end without prior knowledge of the IP or FQDN of the latter.
+Configuration is achieved using simple environment variables or .yml files.
 
 ## API
 
