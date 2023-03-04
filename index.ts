@@ -7,7 +7,7 @@ import { name as application_name, version, author } from "./package.json"
 import { Request, Response, NextFunction } from "express"
 import YAML from "yaml"
 import { readFileSync } from "fs"
-const auth = require("@moreillon/express_identification_middleware")
+import auth from "@moreillon/express_identification_middleware"
 
 dotenv.config()
 
