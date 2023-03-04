@@ -7,7 +7,7 @@ const { name: application_name, version, author } = require("./package.json")
 
 dotenv.config()
 
-const { PORT = 80, PROXY_ROOT, PROXY_WS, BASE_PATH = "" } = process.env
+const { PORT = 80, PROXY_ROOT, PROXY_WS, PATH_PREFIX = "/proxy" } = process.env
 
 const app = express()
 app.use(apiMetrics())
@@ -33,8 +33,8 @@ const services = Object.keys(process.env)
       .toLocaleLowerCase()
       .replace(/_/g, "-")
 
-    const route =
-      serviceName === "root" ? `${BASE_PATH}/` : `${BASE_PATH}/${serviceName}`
+    // PROXY_ROOT is a special route which cannot be prefixed
+    const route = serviceName === "root" ? `/` : `${PATH_PREFIX}/${serviceName}`
     return {
       route,
       host: process.env[variable],
