@@ -7,10 +7,17 @@ import { name as application_name, version, author } from "./package.json"
 import { Request, Response, NextFunction } from "express"
 import YAML from "yaml"
 import { readFileSync } from "fs"
+const auth = require("@moreillon/express_identification_middleware")
 
 dotenv.config()
 
-const { PORT = 80, PROXY_ROOT, PROXY_WS, PATH_PREFIX = "/proxy" } = process.env
+const {
+  PORT = 80,
+  PROXY_ROOT,
+  PROXY_WS,
+  PATH_PREFIX = "/proxy",
+  IDENTIFICATION_URL,
+} = process.env
 
 export const app = express()
 app.use(apiMetrics())
@@ -91,8 +98,18 @@ app.get("/proxy", (req, res) => {
     application_name,
     version,
     services,
+    auth: {
+      url: IDENTIFICATION_URL,
+    },
   })
 })
+
+// Authentication
+if (IDENTIFICATION_URL) {
+  console.log(`[Auth] Enabling authentication using ${IDENTIFICATION_URL}`)
+  const auth_options = { url: IDENTIFICATION_URL }
+  app.use(auth(auth_options))
+}
 
 services.forEach(({ route, host }) => {
   app.all(`${route}*`, route_handler({ host, route }))
