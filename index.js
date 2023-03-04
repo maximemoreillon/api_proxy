@@ -23,32 +23,41 @@ const handle_proxy = (req, res, opts) => {
   })
 }
 
+const getSlashCount = (input) => (input.match(/\//g) || []).length
+
 const services = Object.keys(process.env)
-  .filter((v) => v.startsWith("PROXY_") && v !== "PROXY_ROOT")
+  .filter((v) => v.startsWith("PROXY_") && !["PROXY_WS"].includes(v))
   .map((variable) => {
-    const service = variable
+    const serviceName = variable
       .split("PROXY_")[1]
       .toLocaleLowerCase()
       .replace(/_/g, "-")
-    const route = `/${service}`
+
+    // PROXY_ROOT is a special route which cannot be prefixed
+    const route = serviceName === "root" ? `/` : `${PATH_PREFIX}/${serviceName}`
     return {
       route,
       host: process.env[variable],
       variable,
     }
   })
+  // Sorting by character count and then number of "/" so as to order by specificity
+  .sort((a, b) => b.route.length - a.route.length)
+  .sort((a, b) => getSlashCount(b.route) - getSlashCount(a.route))
 
 const route_handler =
   ({ host, route }) =>
   async (req, res, next) => {
     try {
-      // Rewrite URL
-      const basePath = `${PATH_PREFIX}${route}`
+      // Rewrite URL, i.e. remove /prefix/service/
+
+      const basePath = `${BASE_PATH}${route}`
       const new_path = req.originalUrl.replace(basePath, "")
-      const target = `${host}${new_path}`
+      const new_url = new URL(host)
+      new_url.pathname = new_path
 
       // IgnorePath: true because we reconstruct the path ourselves here
-      const proxy_options = { target, ignorePath: true }
+      const proxy_options = { target: new_url.toString(), ignorePath: true }
 
       // Use the proxy with the given configuration
       handle_proxy(req, res, proxy_options)
@@ -63,17 +72,15 @@ app.get("/proxy", (req, res) => {
     author,
     application_name,
     version,
-    path_prefix: PATH_PREFIX,
-    root: PROXY_ROOT,
     services,
   })
 })
 
 services.forEach(({ route, host }) => {
-  app.all(`${PATH_PREFIX}${route}*`, route_handler({ host, route }))
+  app.all(`${route}*`, route_handler({ host, route }))
 })
 
-// TODO: it is not a good idea to use the WS_prefix as it creates a route above
+// TODO: it is not a good idea to use the PROXY_prefix as it creates a route above
 if (PROXY_WS) {
   app.all("/socket.io*", (req, res) => {
     // The route used for Websockets
@@ -81,18 +88,11 @@ if (PROXY_WS) {
   })
 }
 
-// Front-end
-if (PROXY_ROOT) {
-  // If PROXY_ROOT is set, then front-end at this URL is served
-  app.get("/*", (req, res) => {
-    // The route used for the front end
-    handle_proxy(req, res, { target: PROXY_ROOT })
-  })
-} else {
+if (!PROXY_ROOT) {
+  // Serving app from the dist directory
   console.log("PROXY_ROOT not configured, serving GUI from the /dist directory")
   // Always fall back to index.html
   app.use(history())
-  // Serve the vue.js app
   app.use(express.static("dist"))
 }
 
