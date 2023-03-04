@@ -1,6 +1,11 @@
-const request = require("supertest")
-const { expect } = require("chai")
-const { app } = require("../")
+import request from "supertest"
+import { expect } from "chai"
+import { app } from ".."
+
+process.env.PATH_PREFIX = "/proxy"
+process.env.PROXY_TEST_VALID = "http://localhost:7070"
+process.env.PROXY_TEST_INVALID = "http://localhost:4000"
+process.env.PROXY_TEST_HTTPS = "https://api.users.maximemoreillon.com/"
 
 describe("/proxy", () => {
   before(async () => {
