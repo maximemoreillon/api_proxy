@@ -2,7 +2,7 @@
   "name": "api_proxy",
   "version": "2.1.3",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "dev": "nodemon",
     "test": "mocha -r ts-node/register ./test/*.ts --timeout 10000 --exit",
