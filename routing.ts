@@ -30,7 +30,9 @@ const route_handler =
 
       const basePath = `${PATH_PREFIX}${route}`
       const new_path = req.originalUrl.replace(basePath, "")
-      const new_url = `${host}${new_path}`
+      const new_url = new_path.startsWith("/")
+        ? `${host}${new_path}`
+        : `${host}/${new_path}`
 
       // IgnorePath: true because we reconstruct the path ourselves here
       const proxy_options = { target: new_url, ignorePath: true }
