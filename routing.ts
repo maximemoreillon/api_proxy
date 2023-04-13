@@ -11,12 +11,7 @@ import express from "express"
 
 dotenv.config()
 
-const {
-  PROXY_ROOT,
-  PROXY_WS,
-  PATH_PREFIX = "/proxy",
-  IDENTIFICATION_URL,
-} = process.env
+const { PROXY_WS, PATH_PREFIX = "/proxy", IDENTIFICATION_URL } = process.env
 
 export const router = Router()
 
@@ -65,7 +60,6 @@ if (IDENTIFICATION_URL) {
 }
 
 // TODO: it is not a good idea to use the PROXY_prefix as it creates a route above
-// FIXME: does not seem to be working
 if (PROXY_WS) {
   router.all("/socket.io*", (req, res) => {
     handle_proxy(req, res, { target: PROXY_WS })
