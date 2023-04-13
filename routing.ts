@@ -87,3 +87,7 @@ if (!root_configured) {
   router.use(history())
   router.use(express.static("dist"))
 }
+
+process.on("SIGINT", function () {
+  process.exit()
+})
