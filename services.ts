@@ -6,7 +6,7 @@ dotenv.config()
 
 export interface Service {
   route: string
-  host: string | undefined
+  host?: string
 }
 
 const { PATH_PREFIX = "/proxy" } = process.env

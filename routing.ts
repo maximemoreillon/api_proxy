@@ -1,13 +1,14 @@
+import express from "express"
+import "express-async-errors"
 import history from "connect-history-api-fallback"
 import { name as application_name, version, author } from "./package.json"
-import { Request, Response, NextFunction } from "express"
+import { Request, Response } from "express"
 import auth from "@moreillon/express_identification_middleware"
 import type { Service } from "./services"
 import { services } from "./services"
 import { handle_proxy } from "./proxy"
 import { Router } from "express"
 import dotenv from "dotenv"
-import express from "express"
 
 dotenv.config()
 
@@ -17,26 +18,23 @@ export const router = Router()
 
 const route_handler =
   ({ host, route }: Service) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      // Rewrite URL, i.e. remove /prefix/service/
+  async (req: Request, res: Response) => {
+    // Rewrite URL, i.e. remove /prefix/service/
 
-      if (!host) throw `Host does not exist`
+    if (!host) throw `Host does not exist`
 
-      const basePath = `${PATH_PREFIX}${route}`
-      const new_path = req.originalUrl.replace(basePath, "")
-      const new_url = new_path.startsWith("/")
-        ? `${host}${new_path}`
-        : `${host}/${new_path}`
+    const basePath = `${PATH_PREFIX}${route}`
+    const newPath = req.originalUrl.replace(basePath, "")
 
-      // IgnorePath: true because we reconstruct the path ourselves here
-      const proxy_options = { target: new_url, ignorePath: true }
+    const new_url = newPath.startsWith("/")
+      ? `${host}${newPath}`
+      : `${host}/${newPath}`
 
-      // Use the proxy with the given configuration
-      handle_proxy(req, res, proxy_options)
-    } catch (error) {
-      next(error)
-    }
+    // IgnorePath: true because we reconstruct the path ourselves here
+    const proxy_options = { target: new_url, ignorePath: true }
+
+    // Use the proxy with the given configuration
+    handle_proxy(req, res, proxy_options)
   }
 
 // TODO: consider renaming

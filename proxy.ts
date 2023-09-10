@@ -8,7 +8,7 @@ export interface ProxyOptions {
   ignorePath?: boolean
 }
 
-// TODO: fidn parameters
+// TODO: find parameters
 export const handle_proxy = (
   req: Request,
   res: Response,
