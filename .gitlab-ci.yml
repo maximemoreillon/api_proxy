@@ -21,9 +21,10 @@ services:
 test:
   stage: test
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-  image: node:16
+  image: node:20
   tags:
-    - dind
+    # - dind
+    - k8s
   only:
     - master
   script:
