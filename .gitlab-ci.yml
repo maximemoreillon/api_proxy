@@ -15,8 +15,8 @@ variables:
   PROXY_TEST_INVALID: http://localhost:4000
 
 image: moreillon/ci-dind
-# services:
-#   - name: docker:24.0.7-dind
+services:
+  - name: docker:24.0.7-dind
 
 test:
   stage: test
