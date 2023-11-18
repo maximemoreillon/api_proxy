@@ -23,7 +23,7 @@ test:
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   image: node:20
   tags:
-    - k8s
+    - dind
   only:
     - master
   script:
@@ -33,7 +33,7 @@ test:
 build-x86:
   stage: build
   tags:
-    - k8s
+    - dind
   only:
     - master
   before_script:
@@ -47,7 +47,7 @@ build-x86:
 build-aarch64:
   stage: build
   tags:
-    - k8s
+    - dind
   only:
     - master
   before_script:
