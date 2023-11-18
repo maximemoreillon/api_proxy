@@ -23,7 +23,6 @@ test:
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   image: node:20
   tags:
-    # - dind
     - k8s
   only:
     - master
@@ -34,7 +33,7 @@ test:
 build-x86:
   stage: build
   tags:
-    - dind
+    - k8s
   only:
     - master
   before_script:
@@ -48,20 +47,13 @@ build-x86:
 build-aarch64:
   stage: build
   tags:
-    - dind
+    - k8s
   only:
     - master
   before_script:
     - echo "${DOCKER_HUB_PASSWORD}" | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin;
   script:
-    # Building, tagging
     - docker build -t ${CONTAINER_IMAGE_AARCH64} --platform linux/arm64/v8 .
     - docker tag ${CONTAINER_IMAGE_AARCH64} ${CONTAINER_IMAGE_AARCH64_TAGGED}
-
-    # Pushing
     - docker push ${CONTAINER_IMAGE_AARCH64}
     - docker push ${CONTAINER_IMAGE_AARCH64_TAGGED}
-
-    # Cleanup
-    - docker image rm ${CONTAINER_IMAGE_AARCH64}
-    - docker image rm ${CONTAINER_IMAGE_AARCH64_TAGGED}
