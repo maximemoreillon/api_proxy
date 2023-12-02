@@ -66,6 +66,7 @@ if (PROXY_WS) {
 
 // Register a route for each service
 services.forEach(({ route, host }) => {
+  console.log(`Registering ${route} to proxy ${host}`)
   router.all(`${route}*`, route_handler({ host, route }))
 })
 

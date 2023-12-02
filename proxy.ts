@@ -8,13 +8,13 @@ export interface ProxyOptions {
   ignorePath?: boolean
 }
 
-// TODO: find parameters
 export const handle_proxy = (
   req: Request,
   res: Response,
   opts: ProxyOptions
 ) => {
   // A wrapper for the proxy function
+  console.log(`Proxying ${opts.target}`)
   const options = { ...opts, secure: false }
   proxy.web(req, res, options, (error: Error) => {
     res.status(500).send(error)
