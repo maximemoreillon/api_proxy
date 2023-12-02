@@ -15,7 +15,7 @@ const configFile = readFileSync("./config/config.yml", "utf8")
 const servicesFromConfigFile: Service[] = YAML.parse(configFile).services
 
 const servicesFromEnv: Service[] = Object.keys(process.env)
-  .filter((v) => v.startsWith("PROXY_") && !["PROXY_WS"].includes(v))
+  .filter((v) => v.startsWith("PROXY_") && !["PROXY_SOCKETIO"].includes(v))
   .map((variable) => {
     const serviceName = variable
       .split("PROXY_")[1]

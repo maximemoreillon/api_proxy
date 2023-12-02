@@ -1,6 +1,6 @@
 {
   "name": "api_proxy",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "",
   "main": "index.ts",
   "scripts": {
