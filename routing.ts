@@ -58,6 +58,7 @@ if (IDENTIFICATION_URL) {
 }
 
 // TODO: it is not a good idea to use the PROXY_prefix as it creates a route above
+// TODO: can only be set using environment variables
 if (PROXY_WS) {
   router.all("/socket.io*", (req, res) => {
     handle_proxy(req, res, { target: PROXY_WS })
