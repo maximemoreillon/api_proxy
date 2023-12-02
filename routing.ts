@@ -12,11 +12,7 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-const {
-  PROXY_SOCKETIO,
-  PATH_PREFIX = "/proxy",
-  IDENTIFICATION_URL,
-} = process.env
+const { PROXY_SOCKETIO, IDENTIFICATION_URL } = process.env
 
 export const router = Router()
 
@@ -34,15 +30,6 @@ const route_handler =
     const newUrl = newPath.startsWith("/")
       ? `${host}${newPath}`
       : `${host}/${newPath}`
-
-    console.log({
-      originalUrl: req.originalUrl,
-      route,
-      host,
-      newUrl,
-    })
-
-    // console.log({route, host, basePath, newPath, new_url})
 
     // IgnorePath: true because we reconstruct the path ourselves here
     const proxy_options = { target: newUrl, ignorePath: true }

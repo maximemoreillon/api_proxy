@@ -1,19 +1,11 @@
-import express from "express"
 import dotenv from "dotenv"
-import apiMetrics from "prometheus-api-metrics"
-import { ErrorRequestHandler } from "express"
-import { router } from "./routing"
-
 dotenv.config()
+import express from "express"
+import apiMetrics from "prometheus-api-metrics"
+import { router } from "./routing"
+import { errorHandler } from "./utils"
 
 const { PORT = 80 } = process.env
-
-// Express error handling
-const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  console.error(err)
-  const { statusCode = 500, message } = err
-  res.status(statusCode).send(message)
-}
 
 export const app = express()
 app.use(apiMetrics())
