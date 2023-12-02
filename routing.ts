@@ -12,26 +12,40 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-const { PROXY_SOCKETIO, PATH_PREFIX = "/proxy", IDENTIFICATION_URL } = process.env
+const {
+  PROXY_SOCKETIO,
+  PATH_PREFIX = "/proxy",
+  IDENTIFICATION_URL,
+} = process.env
 
 export const router = Router()
 
+// TODO: route is a confusing name, rename
 const route_handler =
   ({ host, route }: Service) =>
   async (req: Request, res: Response) => {
-    // Rewrite URL, i.e. remove /prefix/service/
+    // Rewrite URL, i.e. remove /prefix/service/, i.e. route
 
     if (!host) throw `Host does not exist`
 
-    const basePath = `${PATH_PREFIX}${route}`
-    const newPath = req.originalUrl.replace(basePath, "")
+    const newPath = req.originalUrl.replace(route, "")
 
-    const new_url = newPath.startsWith("/")
+    // TODO: not very nice
+    const newUrl = newPath.startsWith("/")
       ? `${host}${newPath}`
       : `${host}/${newPath}`
 
+    console.log({
+      originalUrl: req.originalUrl,
+      route,
+      host,
+      newUrl,
+    })
+
+    // console.log({route, host, basePath, newPath, new_url})
+
     // IgnorePath: true because we reconstruct the path ourselves here
-    const proxy_options = { target: new_url, ignorePath: true }
+    const proxy_options = { target: newUrl, ignorePath: true }
 
     // Use the proxy with the given configuration
     handle_proxy(req, res, proxy_options)
@@ -47,7 +61,7 @@ router.get("/proxy", (req, res) => {
     auth: {
       url: IDENTIFICATION_URL,
     },
-    socketIo: PROXY_SOCKETIO
+    socketIo: PROXY_SOCKETIO,
   })
 })
 
