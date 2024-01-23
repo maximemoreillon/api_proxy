@@ -1,5 +1,4 @@
-import express from "express"
-import "express-async-errors"
+import { static as serveStatic } from "express"
 import history from "connect-history-api-fallback"
 import { name as application_name, version, author } from "./package.json"
 import { Request, Response } from "express"
@@ -82,7 +81,7 @@ if (!root_configured) {
   )
   // Always fall back to index.html
   router.use(history())
-  router.use(express.static("dist"))
+  router.use(serveStatic("dist"))
 }
 
 process.on("SIGINT", function () {
