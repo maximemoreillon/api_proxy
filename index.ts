@@ -23,9 +23,7 @@ if (PROXY_SOCKETIO) {
     ws: true,
     target: PROXY_SOCKETIO,
   })
-  server.on("upgrade", function (req, socket, head) {
-    socketIoProxy.ws(req, socket, head)
-  })
+  server.on("upgrade", socketIoProxy.ws)
 }
 
 server.listen(PORT, () => {

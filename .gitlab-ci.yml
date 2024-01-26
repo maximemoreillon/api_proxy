@@ -4,7 +4,7 @@ stages:
 
 variables:
   APPLICATION_NAME: api-proxy
-  CONTAINER_TAG: ${CI_COMMIT_SHORT_SHA}
+  CONTAINER_TAG: ${CI_COMMIT_TAG}
   CONTAINER_IMAGE: ${DOCKER_HUB_USERNAME}/${APPLICATION_NAME}
   CONTAINER_IMAGE_TAGGED: ${CONTAINER_IMAGE}:${CONTAINER_TAG}
   CONTAINER_IMAGE_AARCH64: ${CONTAINER_IMAGE}:aarch64
@@ -25,7 +25,7 @@ test:
   tags:
     - dind
   only:
-    - master
+    - tags
   script:
     - npm install
     - npm run coverage
@@ -35,7 +35,7 @@ build-x86:
   tags:
     - dind
   only:
-    - master
+    - tags
   before_script:
     - echo "${DOCKER_HUB_PASSWORD}" | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin;
   script:
@@ -49,7 +49,7 @@ build-aarch64:
   tags:
     - dind
   only:
-    - master
+    - tags
   before_script:
     - echo "${DOCKER_HUB_PASSWORD}" | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin;
   script:
