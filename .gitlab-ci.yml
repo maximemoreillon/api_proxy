@@ -43,17 +43,16 @@ build-x86:
     - docker tag ${CONTAINER_IMAGE} ${CONTAINER_IMAGE_TAGGED}
     - docker push ${CONTAINER_IMAGE}
     - docker push ${CONTAINER_IMAGE_TAGGED}
-
-build-aarch64:
-  stage: build
-  tags:
-    - dind
-  only:
-    - tags
-  before_script:
-    - echo "${DOCKER_HUB_PASSWORD}" | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin;
-  script:
-    - docker build -t ${CONTAINER_IMAGE_AARCH64} --platform linux/arm64/v8 .
-    - docker tag ${CONTAINER_IMAGE_AARCH64} ${CONTAINER_IMAGE_AARCH64_TAGGED}
-    - docker push ${CONTAINER_IMAGE_AARCH64}
-    - docker push ${CONTAINER_IMAGE_AARCH64_TAGGED}
+# build-aarch64:
+#   stage: build
+#   tags:
+#     - dind
+#   only:
+#     - tags
+#   before_script:
+#     - echo "${DOCKER_HUB_PASSWORD}" | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin;
+#   script:
+#     - docker build -t ${CONTAINER_IMAGE_AARCH64} --platform linux/arm64/v8 .
+#     - docker tag ${CONTAINER_IMAGE_AARCH64} ${CONTAINER_IMAGE_AARCH64_TAGGED}
+#     - docker push ${CONTAINER_IMAGE_AARCH64}
+#     - docker push ${CONTAINER_IMAGE_AARCH64_TAGGED}
